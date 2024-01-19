@@ -2,6 +2,8 @@
 using API_CLIENTE.Interface;
 using API_CLIENTE.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +65,22 @@ namespace API_CLIENTE.Interface
                       .ToList();
             }
 
+
+            // Configurar a formatação do JSON
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(), // Converte para camelCase
+                NullValueHandling = NullValueHandling.Ignore // Ignora propriedades nulas
+            };
+
+            // Serializar os clientes usando as configurações personalizadas
+            var jsonClientes = JsonConvert.SerializeObject(resultado, settings);
+
+
+
+
+
+
             return resultado;
         }
 
@@ -72,14 +90,42 @@ namespace API_CLIENTE.Interface
             _dbContext.SaveChanges();
         }
 
-        public void AtualizarCliente(int id, Clientes cliente)
+        public void AtualizarCliente(int id, Clientes clienteAtualizado)
         {
-            var clienteExistente = clientes.FirstOrDefault(c => c.ClientID == id);
+            var clienteExistente = _dbContext.Cliente
+                .Include(c => c.Contatos)
+                    .Include(c => c.Enderecos)
+                .FirstOrDefault(c => c.ClientID == id);
+
             if (clienteExistente != null)
             {
-                clienteExistente.Nome = cliente.Nome;
-                clienteExistente.Email = cliente.Email;
-                clienteExistente.Cpf = cliente.Cpf;
+                // Atualizar propriedades do cliente
+                clienteExistente.Nome = clienteAtualizado.Nome;
+                clienteExistente.Email = clienteAtualizado.Email;
+                clienteExistente.Cpf = clienteAtualizado.Cpf;
+                clienteExistente.Rg = clienteAtualizado.Rg;
+
+                // Atualizar propriedades de Contatos
+                clienteExistente.Contatos.Tipo = clienteAtualizado.Contatos.Tipo;
+                clienteExistente.Contatos.DDD = clienteAtualizado.Contatos.DDD;
+                clienteExistente.Contatos.Telefone = clienteAtualizado.Contatos.Telefone;
+
+                // Atualizar propriedades de Enderecos
+                clienteExistente.Enderecos.Tipo = clienteAtualizado.Enderecos.Tipo;
+                clienteExistente.Enderecos.Cep = clienteAtualizado.Enderecos.Cep;
+                clienteExistente.Enderecos.Logradouro = clienteAtualizado.Enderecos.Logradouro;
+                clienteExistente.Enderecos.Numero = clienteAtualizado.Enderecos.Numero;
+                clienteExistente.Enderecos.Bairro = clienteAtualizado.Enderecos.Bairro;
+                clienteExistente.Enderecos.Complemento = clienteAtualizado.Enderecos.Complemento;
+                clienteExistente.Enderecos.Cidade = clienteAtualizado.Enderecos.Cidade;
+                clienteExistente.Enderecos.Estado = clienteAtualizado.Enderecos.Estado;
+                clienteExistente.Enderecos.Referencia = clienteAtualizado.Enderecos.Referencia;
+
+                _dbContext.SaveChanges();
+            }
+            else
+            {
+                throw new Exception();
             }
         }
 
@@ -96,6 +142,10 @@ namespace API_CLIENTE.Interface
                 _dbContext.Enderecos.Remove(clienteExistente.Enderecos);
                 _dbContext.Remove(clienteExistente);
                 _dbContext.SaveChanges();
+            }
+            else
+            {
+                throw new Exception();
             }
         }
     }

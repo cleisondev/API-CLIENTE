@@ -40,16 +40,34 @@ namespace API_CLIENTE.Controllers
         [HttpPut("atualizar/{id}")]
         public IActionResult AtualizarCliente(int id, [FromBody] Clientes cliente)
         {
-            clienteService.AtualizarCliente(id, cliente);
+            try
+            {
+                clienteService.AtualizarCliente(id, cliente);
 
-            return Ok(new { message = "Cliente atualizado com sucesso!" });
+                return Ok(new { message = "Cliente atualizado com sucesso!" });
+            }
+            catch (Exception)
+            {
+                return NotFound($"Cliente com id = {id} não localizado..");
+            }
+
+
         }
 
         [HttpDelete("remover/{id}")]
         public IActionResult RemoverCliente(int id)
         {
-            clienteService.RemoverCliente(id);
-            return Ok(new { message = "Cliente removido com sucesso!" });
+            try
+            {
+                clienteService.RemoverCliente(id);
+                return Ok(new { message = "Cliente removido com sucesso!" });
+            }
+            catch (Exception)
+            {
+                return NotFound($"Cliente com id = {id} não localizado..");
+            }
+       
+           
         }
 
     }

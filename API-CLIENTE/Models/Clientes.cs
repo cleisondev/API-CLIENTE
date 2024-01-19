@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API_CLIENTE.Models
 {
@@ -6,21 +7,26 @@ namespace API_CLIENTE.Models
     {
         [Key]
         public int ClientID { get; set; }
+
         [RegularExpression("^[A-Za-z ]+$", ErrorMessage = "O nome deve conter apenas letras.")]
         public string Nome { get; set; }
+
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+
         [Required]
         [MaxLength(11, ErrorMessage = "O CPF deve ter exatamente 11 caracteres.")]
         [MinLength(11, ErrorMessage = "O CPF deve ter exatamente 11 caracteres.")]
         [RegularExpression("^[0-9]*$", ErrorMessage = "O campo CPF deve conter apenas números.")]
         public string Cpf { get; set; }
+
         [Required]
-        [MaxLength(9, ErrorMessage = "O CPF deve ter exatamente 11 caracteres.")]
-        [MinLength(9, ErrorMessage = "O CPF deve ter exatamente 11 caracteres.")]
+        [MaxLength(9, ErrorMessage = "O RG deve ter exatamente 9 caracteres.")]
+        [MinLength(9, ErrorMessage = "O RG deve ter exatamente 9 caracteres.")]
         [RegularExpression("^[0-9]*$", ErrorMessage = "O campo RG deve conter apenas números.")]
         public string Rg { get; set; }
+
         public Contatos Contatos { get; set; }
         public Enderecos Enderecos { get; set; }
 
@@ -32,7 +38,8 @@ namespace API_CLIENTE.Models
         [Key]
         public int ContatoID { get; set; }
         public string Tipo { get; set; }
-        public int DDD { get; set; }
+        public int DDD { get; set; } 
+        [Column(TypeName = "decimal(10,0)")]
         public decimal Telefone { get; set; }
     }
 
@@ -41,9 +48,10 @@ namespace API_CLIENTE.Models
         [Key]
         public int EnderecoID { get; set; }
         public string Tipo { get; set; }
+
         [Required]
-        [MaxLength(8, ErrorMessage = "O CPF deve ter exatamente 11 caracteres.")]
-        [MinLength(8, ErrorMessage = "O CPF deve ter exatamente 11 caracteres.")]
+        [MaxLength(8, ErrorMessage = "O CEP deve ter exatamente 8 caracteres.")]
+        [MinLength(8, ErrorMessage = "O CEP deve ter exatamente 8 caracteres.")]
         [RegularExpression("^[0-9]*$", ErrorMessage = "O campo CEP deve conter apenas números.")]
         public string Cep { get; set; }
         public string Logradouro { get; set; }
